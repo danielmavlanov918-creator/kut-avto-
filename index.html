@@ -1,0 +1,485 @@
+<!doctype html>
+<html lang="ky">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Кут Авто</title>
+<meta name="theme-color" content="#17382c">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Кут Авто">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&display=swap">
+<style id="app-css">[hidden]{display:none!important}
+body{margin:0}
+img{max-width:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+
+/* Layout: public site (sticky bar, hero + finder, catalog, calculator, contacts) and an owner-only panel on #panel that edits the same data */
+:root{
+  --bg:#eef0ec; --surface:#ffffff; --ink:#14201b; --muted:#56635d; --line:#d5dad3;
+  --accent:#b8892b; --accent-ink:#1a1405; --deep:#17382c; --deep-ink:#eef0ec; --good:#2e7d4f; --bad:#b3372c;
+  --f-display:'Unbounded','Arial Black',sans-serif; --f-body:'Onest','Segoe UI',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0e1512; --surface:#16201b; --ink:#e9eee9; --muted:#9aa89f; --line:#2a3731;
+  --accent:#d3a444; --accent-ink:#1a1405; --deep:#1d4636; --deep-ink:#eef3ee; --good:#5fbf86; --bad:#e2776c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0e1512; --surface:#16201b; --ink:#e9eee9; --muted:#9aa89f; --line:#2a3731;
+  --accent:#d3a444; --accent-ink:#1a1405; --deep:#1d4636; --deep-ink:#eef3ee; --good:#5fbf86; --bad:#e2776c; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.55;
+  padding-block:0;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:1120px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h2{font-size:clamp(1.4rem,4.5vw,2rem)}
+p{margin:0}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+button,select,input,textarea{font:inherit;color:inherit}
+.eyebrow{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+header.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);
+  margin-inline:calc(-1*max(16px,env(safe-area-inset-left,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px))}
+.bar .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-block:12px;flex-wrap:wrap}
+.logo{font-family:var(--f-display);font-weight:700;font-size:1.1rem;text-decoration:none;display:flex;align-items:center;gap:10px}
+.logo i{width:30px;height:30px;border-radius:8px;background:var(--deep);display:grid;place-items:center}
+.logo i svg{width:18px;height:18px}
+nav{display:flex;gap:18px;font-size:.9rem;font-weight:500;flex-wrap:wrap}
+nav a{text-decoration:none;color:var(--muted)}
+nav a:hover{color:var(--ink)}
+.phone{background:var(--accent);color:var(--accent-ink);font-weight:600;border-radius:10px;padding:9px 14px;text-decoration:none;font-size:.9rem;white-space:nowrap}
+
+.hero{display:grid;grid-template-columns:1.15fr .85fr;gap:32px;padding-block:44px 36px;align-items:center}
+.hero h1{font-size:clamp(1.8rem,6vw,3.1rem);margin-block:12px 16px}
+.hero p.lead{color:var(--muted);max-width:52ch;font-size:1.05rem}
+.facts{display:flex;gap:26px;flex-wrap:wrap;margin-top:26px}
+.facts div{min-width:0}
+.facts b{display:block;font-family:var(--f-display);font-size:1.5rem;font-variant-numeric:tabular-nums}
+.facts span{font-size:.82rem;color:var(--muted)}
+.finder{background:var(--deep);color:var(--deep-ink);border-radius:18px;padding:22px;display:grid;gap:12px;min-width:0}
+.finder h3{font-size:1rem;font-family:var(--f-display)}
+.finder label{font-size:.78rem;opacity:.8;display:grid;gap:5px}
+.finder select,.finder input{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:10px;padding:11px 12px;width:100%;color:var(--deep-ink)}
+.finder option{color:#14201b}
+.btn{border:0;border-radius:10px;padding:13px 18px;font-weight:600;cursor:pointer;background:var(--accent);color:var(--accent-ink);text-align:center;text-decoration:none;display:inline-block}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn.danger{background:transparent;border:1px solid var(--bad);color:var(--bad)}
+
+section{padding-block:40px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;cursor:pointer;font-size:.88rem}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.sort{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.pic{aspect-ratio:16/9;max-width:100%;display:grid;place-items:end center;position:relative;overflow:hidden}
+.pic svg{width:92%;height:auto;margin-bottom:6%}
+.pic img.ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.pic.sold svg,.pic.sold img.ph{filter:grayscale(.85) opacity(.7)}
+.tag{position:absolute;left:12px;top:12px;z-index:1;font-size:.72rem;font-weight:600;background:var(--surface);color:var(--ink);padding:4px 9px;border-radius:999px}
+.tag.sold{background:var(--ink);color:var(--bg)}
+.info{padding:16px;display:grid;gap:10px;flex:1}
+.info h3{font-size:1rem}
+.specs{display:flex;gap:6px 14px;flex-wrap:wrap;font-size:.82rem;color:var(--muted)}
+.price{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:auto;padding-top:6px}
+.price b{font-family:var(--f-display);font-size:1.15rem;font-variant-numeric:tabular-nums}
+.price button{padding:9px 13px;font-size:.85rem}
+.empty{padding:30px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:14px}
+
+.two{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px;min-width:0}
+.steps{display:grid;gap:16px;margin-top:16px}
+.steps div{display:grid;grid-template-columns:auto 1fr;gap:12px}
+.steps .dot{width:34px;height:34px;border-radius:10px;background:var(--deep);color:var(--deep-ink);display:grid;place-items:center;font-weight:600;font-size:.9rem}
+.steps b{display:block}
+.steps span.t{font-size:.9rem;color:var(--muted)}
+.calc{display:grid;gap:14px;margin-top:16px}
+.calc label{display:grid;gap:6px;font-size:.85rem;color:var(--muted)}
+.calc label span{display:flex;justify-content:space-between;color:var(--ink);font-weight:600}
+.calc select,.calc input[type=range]{width:100%}
+.calc select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px}
+input[type=range]{accent-color:var(--accent)}
+.result{background:var(--deep);color:var(--deep-ink);border-radius:14px;padding:16px}
+.result b{display:block;font-family:var(--f-display);font-size:1.6rem;font-variant-numeric:tabular-nums}
+.result small{opacity:.8}
+
+form.contact{display:grid;gap:12px;margin-top:16px}
+form.contact label{display:grid;gap:6px;font-size:.85rem;color:var(--muted)}
+form.contact input,form.contact textarea,form.contact select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:11px 12px;width:100%}
+.note{font-size:.88rem;padding:14px;border-radius:12px;background:var(--bg);border:1px solid var(--line);display:grid;gap:10px}
+.note pre{white-space:pre-wrap;word-break:break-word;margin:0;font-family:var(--f-body);font-size:.88rem}
+.note .row{display:flex;gap:10px;flex-wrap:wrap}
+.hours{display:grid;gap:10px;margin-top:16px;font-size:.95rem}
+.hours div{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);padding-bottom:8px}
+.hours span{color:var(--muted)}
+.hours b{text-align:right;min-width:0;overflow-wrap:anywhere}
+footer{padding-block:28px 40px;border-top:1px solid var(--line);color:var(--muted);font-size:.85rem;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+footer a{color:var(--ink);font-weight:600}
+.draftbar{margin-top:14px;background:var(--accent);color:var(--accent-ink);border-radius:12px;padding:10px 14px;display:flex;gap:12px;justify-content:space-between;align-items:center;flex-wrap:wrap;font-size:.9rem;font-weight:600}
+.draftbar a{color:inherit}
+
+/* owner panel */
+.adm{padding-block:22px 60px;display:grid;gap:18px}
+.adm-bar .wrap{flex-wrap:nowrap}
+.adm-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.adm-actions .btn{padding:9px 13px;font-size:.88rem}
+#status{font-size:.9rem;color:var(--muted);min-height:1.4em}
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.a-head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.a-head h2{font-size:1.2rem}
+.a-list{display:grid;gap:10px}
+.a-row{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;min-width:0}
+.a-thumb{aspect-ratio:16/9;border-radius:8px;overflow:hidden;position:relative;display:grid;place-items:end center}
+.a-thumb svg{width:92%;height:auto;margin-bottom:4%}
+.a-thumb img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.a-main{min-width:0;display:grid;gap:4px}
+.a-main b{overflow-wrap:anywhere}
+.a-main small{color:var(--muted)}
+.a-ctl{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.a-ctl select{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.a-ctl .btn{padding:8px 12px;font-size:.85rem}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.form-grid .full{grid-column:1/-1}
+.fld{display:grid;gap:6px;font-size:.85rem;color:var(--muted);min-width:0}
+.fld input,.fld select,.fld textarea{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;color:var(--ink)}
+.fld input[type=color]{padding:3px;height:44px}
+.fld small{color:var(--muted)}
+.pv{aspect-ratio:16/9;max-width:320px;border-radius:12px;overflow:hidden;position:relative;display:grid;place-items:end center}
+.pv svg{width:92%;height:auto;margin-bottom:4%}
+.pv img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sw{display:flex;gap:10px;flex-wrap:wrap}
+.sw button{width:40px;height:40px;border-radius:50%;border:2px solid var(--line);cursor:pointer}
+.acts{display:flex;gap:10px;flex-wrap:wrap}
+.gate{padding-block:60px;display:grid;gap:16px;max-width:560px}
+
+.dock{display:none}
+@media (max-width:820px){
+  .hero,.two,.form-grid{grid-template-columns:1fr}.hero{padding-block:28px}nav{display:none}
+  .bar .wrap{flex-wrap:nowrap}.phone{padding:8px 11px;font-size:.82rem}
+  main.pub{padding-bottom:84px}
+  .grid{grid-template-columns:1fr}
+  .dock{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--bg);border-top:1px solid var(--line);
+    padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .dock .btn{padding:12px 10px}
+  .adm-bar .logo{font-size:.95rem}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+/* login */
+.login{min-height:70vh;display:grid;place-items:center;padding-block:40px}
+.login .panel{width:100%;max-width:400px;display:grid;gap:14px}
+.login h2{font-size:1.3rem}
+.err{color:var(--bad);font-size:.9rem;min-height:1.3em}
+
+/* phone fixes: 16px fields stop iOS zoom on focus; admin bar stays on one row */
+select,input,textarea{font-size:1rem}
+@media (max-width:560px){
+  .adm-bar .logo{display:none}
+  .adm-actions{width:100%;flex-wrap:nowrap}
+  .adm-actions .btn{flex:1;padding:10px 6px;font-size:.82rem;white-space:nowrap}
+}
+
+/* gallery */
+.pic[data-gal]{cursor:zoom-in}
+.cnt{position:absolute;right:10px;bottom:10px;z-index:1;background:rgba(0,0,0,.62);color:#fff;font-size:.72rem;font-weight:600;padding:4px 9px;border-radius:999px}
+.lb{position:fixed;inset:0;z-index:100;background:rgba(6,10,8,.94);display:grid;place-items:center;padding:56px 12px 64px}
+.lb-img{max-width:100%;max-height:100%;object-fit:contain;border-radius:8px}
+.lb button{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;cursor:pointer;border-radius:999px;width:46px;height:46px;font-size:1.7rem;line-height:1}
+.lb .lb-x{top:calc(10px + env(safe-area-inset-top,0px));right:12px}
+.lb .lb-prev{left:10px;top:50%;transform:translateY(-50%)}
+.lb .lb-next{right:10px;top:50%;transform:translateY(-50%)}
+.lb-c{position:absolute;left:0;right:0;bottom:calc(16px + env(safe-area-inset-bottom,0px));text-align:center;color:#fff;font-size:.9rem}
+/* admin photo grid */
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px}
+.th{border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--bg);display:grid}
+.th img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block}
+.thb{display:flex;justify-content:space-between;gap:4px;padding:6px;font-size:.75rem}
+.thb span{color:var(--good);font-weight:600}
+.thb button{border:0;background:none;color:var(--ink);font-size:.75rem;cursor:pointer;padding:2px 4px;text-decoration:underline}
+.thb button[data-act=rmphoto]{color:var(--bad)}
+
+.pm{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:8px;border:1px dashed var(--accent);border-radius:10px}
+.pm .btn{padding:8px 12px;font-size:.85rem;cursor:pointer}
+.pm .pmm{font-size:.8rem;color:var(--muted);flex:1 1 100%}
+.vh{position:absolute;opacity:0;width:1px;height:1px;overflow:hidden}
+.pbar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--deep);color:var(--deep-ink);display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  padding-top:10px;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.pbar~.dock{display:none!important}
+.pbar span{flex:1 1 160px;font-size:.85rem}
+.pbar .btn{padding:9px 12px;font-size:.85rem}
+.pbar .btn.ghost{color:var(--deep-ink);border-color:rgba(255,255,255,.4)}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="application/json" id="site-data">{"s": {"name": "Кут Авто", "city": "Бишкек", "address": "Бишкек, Чүй проспектиси 100", "phone": "+996 555 00 00 00", "wa": "996555000000", "hoursWeek": "09:00 – 19:00", "hoursSun": "10:00 – 16:00", "eyebrow": "Бишкек · Авто салон", "heroTitle": "Текшерилген унаалар, так баа жана жазуу жүзүндөгү кепилдик", "heroLead": "Ар бир унаа сатуудан мурун 120 пункт боюнча текшерилет. Пробег, ДТП тарыхы жана документтери ачык көрсөтүлөт. Насыя 1 күндө, трейд-ин ошол эле күнү.", "facts": [{"v": "120", "l": "пункт боюнча текшерүү"}, {"v": "12 ай", "l": "кепилдик"}, {"v": "1 күн", "l": "насыяга чечим"}], "rate": 14, "accent": "#b8892b", "footerNote": "Баалар жана унаалардын жеткиликтүүлүгү өзгөрүшү мүмкүн."}, "nextId": 10, "cars": [{"id": 1, "brand": "Toyota", "model": "Camry 70", "year": 2021, "km": 48000, "price": 27500, "body": "Седан", "fuel": "Бензин", "gear": "Автомат", "color": "#c9ced1", "tag": "Жаңы келди", "status": "sale", "photo": "", "photos": []}, {"id": 2, "brand": "Toyota", "model": "Land Cruiser Prado", "year": 2019, "km": 92000, "price": 42000, "body": "Внедорожник", "fuel": "Дизель", "gear": "Автомат", "color": "#1f2a30", "tag": "", "status": "sale", "photo": "", "photos": []}, {"id": 3, "brand": "Hyundai", "model": "Sonata", "year": 2020, "km": 61000, "price": 18900, "body": "Седан", "fuel": "Бензин", "gear": "Автомат", "color": "#7a1f2b", "tag": "", "status": "sale", "photo": "", "photos": []}, {"id": 4, "brand": "Lexus", "model": "RX 350", "year": 2018, "km": 104000, "price": 33800, "body": "Кроссовер", "fuel": "Бензин", "gear": "Автомат", "color": "#e4e1d8", "tag": "Тандалма", "status": "sale", "photo": "", "photos": []}, {"id": 5, "brand": "Kia", "model": "K5", "year": 2022, "km": 29000, "price": 24300, "body": "Седан", "fuel": "Бензин", "gear": "Автомат", "color": "#2a4a7a", "tag": "Жаңы келди", "status": "sale", "photo": "", "photos": []}, {"id": 6, "brand": "Mercedes-Benz", "model": "E 200", "year": 2017, "km": 118000, "price": 26900, "body": "Седан", "fuel": "Бензин", "gear": "Автомат", "color": "#35393c", "tag": "", "status": "sale", "photo": "", "photos": []}, {"id": 7, "brand": "BMW", "model": "X5 xDrive30d", "year": 2018, "km": 97000, "price": 39500, "body": "Кроссовер", "fuel": "Дизель", "gear": "Автомат", "color": "#e8eaeb", "tag": "", "status": "sale", "photo": "", "photos": []}, {"id": 8, "brand": "Honda", "model": "Fit", "year": 2016, "km": 87000, "price": 9800, "body": "Хэтчбек", "fuel": "Гибрид", "gear": "Автомат", "color": "#4f8a6a", "tag": "Арзан", "status": "sale", "photo": "", "photos": []}, {"id": 9, "brand": "Toyota", "model": "Alphard", "year": 2017, "km": 112000, "price": 31500, "body": "Минивэн", "fuel": "Бензин", "gear": "Автомат", "color": "#101417", "tag": "", "status": "sale", "photo": "", "photos": []}], "siteId": "5689dd3454d7", "rev": 1794597249697}</script>
+<script id="app-js">
+(function(){
+var $=function(i){return document.getElementById(i)};
+var S=null;
+var BODIES=['Седан','Кроссовер','Внедорожник','Хэтчбек','Минивэн','Пикап'];
+var FUELS=['Бензин','Дизель','Гибрид','Электро','Газ/бензин'];
+var GEARS=['Автомат','Механика','Вариатор','Робот'];
+var STATUS=[['sale','Сатылууда'],['sold','Сатылды'],['hidden','Жашыруун']];
+var SWATCH=['#b8892b','#c0392b','#2f6fed','#2e7d4f','#e67e22'];
+var BG=['#dfe5dc','#e6e1d3','#d9e0e6','#e4dcd9'];
+function esc(v){return String(v==null?'':v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+function money(n){return '$'+Math.round(n).toLocaleString('ru-RU').replace(/[  ]/g,' ')}
+function hex(c){return /^#[0-9a-f]{6}$/i.test(c)?c:'#8a8f93'}
+function typeOf(c){return {'Седан':'sedan','Хэтчбек':'hatch','Минивэн':'van'}[c.body]||'suv'}
+function carSvg(c){
+  var f=hex(c.color),w='#0b0f0d';
+  var body={
+   sedan:'<path d="M20 78 L30 56 Q34 50 42 49 L72 46 Q84 30 104 28 L138 28 Q158 30 170 48 L196 54 Q208 58 210 70 L212 78 Z" fill="'+f+'"/><path d="M82 46 Q90 34 106 33 L136 33 Q150 34 158 46 Z" fill="#9fb4bd" opacity=".85"/>',
+   suv:'<path d="M18 80 L24 54 Q27 48 36 47 L64 44 L84 26 L168 26 Q182 28 190 46 L204 52 Q212 56 212 70 L214 80 Z" fill="'+f+'"/><path d="M90 31 L164 31 Q172 33 178 46 L82 46 Z" fill="#9fb4bd" opacity=".85"/>',
+   hatch:'<path d="M26 80 L32 56 Q36 50 44 49 L78 46 Q88 30 108 29 L158 29 Q176 32 184 52 Q200 56 204 70 L206 80 Z" fill="'+f+'"/><path d="M92 45 Q98 34 112 33 L156 33 Q166 36 172 46 Z" fill="#9fb4bd" opacity=".85"/>',
+   van:'<path d="M18 80 L22 50 Q26 42 36 40 L62 36 L84 22 L176 22 Q190 24 196 44 L206 52 Q212 58 212 70 L214 80 Z" fill="'+f+'"/><path d="M88 27 L174 27 Q182 30 186 44 L80 44 Z" fill="#9fb4bd" opacity=".85"/>'
+  }[typeOf(c)];
+  var wheel=function(x){return '<circle cx="'+x+'" cy="80" r="14" fill="'+w+'"/><circle cx="'+x+'" cy="80" r="6" fill="#aab3b8"/>'};
+  return '<svg viewBox="0 0 232 100" role="img" aria-label="'+esc(c.brand+' '+c.model)+'"><ellipse cx="116" cy="94" rx="100" ry="4" fill="#000" opacity=".12"/>'+body+wheel(64)+wheel(172)+'</svg>';
+}
+function photoList(c){return Array.isArray(c.photos)&&c.photos.length?c.photos:(c.photo?[c.photo]:[])}
+function photoImg(c,cls){return c.photo?'<img class="'+cls+'" src="'+esc(c.photo)+'" alt="'+esc(c.brand+' '+c.model)+'" loading="lazy">':''}
+function applyAccent(){
+  var a=hex(S.s.accent||'#b8892b'),st=document.documentElement.style;
+  if(a.toLowerCase()==='#b8892b'){st.removeProperty('--accent');st.removeProperty('--accent-ink');return}
+  var r=parseInt(a.slice(1,3),16),g=parseInt(a.slice(3,5),16),b=parseInt(a.slice(5,7),16);
+  st.setProperty('--accent',a);st.setProperty('--accent-ink',(0.299*r+0.587*g+0.114*b)/255>0.55?'#1a1405':'#ffffff');
+}
+
+S=JSON.parse($('site-data').textContent);
+var root=$('root');
+var ST={body:'',brand:'',budget:0,sort:'new'};
+function siteHTML(){
+  var s=S.s,tel='tel:'+String(s.phone).replace(/[^\d+]/g,'');
+  return '<header class="bar"><div class="wrap">'+
+    '<a class="logo" href="#top"><i><svg viewBox="0 0 24 24" fill="none" stroke="#d3a444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 15l1.6-4.6A2 2 0 0 1 6.5 9h11a2 2 0 0 1 1.9 1.4L21 15v3H3z"/><circle cx="7.5" cy="17.5" r="1.5"/><circle cx="16.5" cy="17.5" r="1.5"/></svg></i>'+esc(s.name)+'</a>'+
+    '<nav><a href="#katalog">Каталог</a><a href="#kredit">Насыя</a><a href="#kyzmat">Кызматтар</a><a href="#bailanysh">Байланыш</a></nav>'+
+    '<a class="phone" href="'+esc(tel)+'">'+esc(s.phone)+'</a></div></header>'+
+  '<main class="wrap pub" id="top">'+
+        '<div class="hero"><div><div class="eyebrow">'+esc(s.eyebrow)+'</div><h1>'+esc(s.heroTitle)+'</h1><p class="lead">'+esc(s.heroLead)+'</p>'+
+    '<div class="facts">'+s.facts.map(function(f){return '<div><b>'+esc(f.v)+'</b><span>'+esc(f.l)+'</span></div>'}).join('')+'</div></div>'+
+    '<form class="finder" id="finder" aria-label="Унаа издөө"><h3>Унаа табуу</h3>'+
+    '<label for="fBrand">Марка<select id="fBrand"></select></label>'+
+    '<label for="fBudget">Бюджет (чейин, $)<input id="fBudget" type="number" min="0" step="500" placeholder="мис., 25000" inputmode="numeric"></label>'+
+    '<button class="btn" type="submit">Көрсөтүү</button></form></div>'+
+    '<section id="katalog" style="padding-top:12px"><div class="head"><div><div class="eyebrow">Каталог</div><h2>Сатылып жаткан унаалар</h2></div>'+
+    '<select class="sort" id="sort" aria-label="Иргөө"><option value="new">Жаңылары адегенде</option><option value="asc">Баасы: арзандан кымбатка</option><option value="desc">Баасы: кымбаттан арзанга</option><option value="km">Пробег аз</option></select></div>'+
+    '<div class="chips" id="chips" role="group" aria-label="Кузов түрү"></div><div class="grid" id="grid" style="margin-top:18px"></div></section>'+
+    '<section id="kredit"><div class="two"><div class="panel"><div class="eyebrow">Насыя эсептегич</div><h2 style="font-size:1.35rem;margin-top:6px">Айлык төлөмдү эсептеңиз</h2>'+
+    '<div class="calc"><label for="cCar">Унаа<select id="cCar"></select></label>'+
+    '<label for="cDown"><span>Баштапкы төлөм <em id="cDownV" style="font-style:normal"></em></span><input id="cDown" type="range" min="10" max="70" step="5" value="30"></label>'+
+    '<label for="cTerm"><span>Мөөнөт <em id="cTermV" style="font-style:normal"></em></span><input id="cTerm" type="range" min="12" max="60" step="6" value="36"></label>'+
+    '<div class="result"><small>Айлык төлөм</small><b id="cMonth"></b><small id="cNote"></small></div></div></div>'+
+    '<div class="panel" id="kyzmat"><div class="eyebrow">Кантип иштейбиз</div><h2 style="font-size:1.35rem;margin-top:6px">Сатып алуу төрт кадамда</h2><div class="steps">'+
+    '<div><span class="dot">1</span><p><b>Унааны тандайсыз</b><span class="t">Каталогдон же менеджер менен сүйлөшүп.</span></p></div>'+
+    '<div><span class="dot">2</span><p><b>Тест-драйв жана текшерүү</b><span class="t">Өз устаңыз менен текшертүүгө болот.</span></p></div>'+
+    '<div><span class="dot">3</span><p><b>Насыя же накталай төлөм</b><span class="t">Трейд-ин менен эски унааңызды эсептейбиз.</span></p></div>'+
+    '<div><span class="dot">4</span><p><b>Документтер жана ачкыч</b><span class="t">Каттоо боюнча жардам берилет.</span></p></div></div></div></div></section>'+
+    '<section id="bailanysh"><div class="two"><div class="panel"><div class="eyebrow">Заявка</div><h2 style="font-size:1.35rem;margin-top:6px">Тест-драйвга жазылыңыз</h2>'+
+    '<form class="contact" id="contact">'+
+    '<label for="name">Атыңыз<input id="name" required autocomplete="name"></label>'+
+    '<label for="tel">Телефон<input id="tel" required inputmode="tel" autocomplete="tel" placeholder="+996 ..."></label>'+
+    '<label for="carSel">Кызыккан унаа<select id="carSel"></select></label>'+
+    '<label for="msg">Билдирүү<textarea id="msg" rows="3" placeholder="Кайсы убакытта тактоо ыңгайлуу?"></textarea></label>'+
+    '<button class="btn" type="submit">Заявка даярдоо</button></form>'+
+    '<div class="note" id="note" hidden><b>Заявка даяр</b><pre id="notePre"></pre>'+
+    '<p>Бул беттен автоматтык жөнөтүү иштебейт. Текстти салонго жөнөтүңүз же <b>'+esc(s.phone)+'</b> номерине чалыңыз.</p>'+
+    '<div class="row"><a class="btn" id="noteWa" target="_blank" rel="noopener" hidden>WhatsApp аркылуу жөнөтүү</a><button class="btn ghost" type="button" id="copy">Текстти көчүрүү</button></div></div></div>'+
+    '<div class="panel"><div class="eyebrow">Салон</div><h2 style="font-size:1.35rem;margin-top:6px">Кайда жайгашкан</h2><div class="hours">'+
+    '<div><span>Дарек</span><b>'+esc(s.address)+'</b></div><div><span>Дүйшөмбү – Ишемби</span><b>'+esc(s.hoursWeek)+'</b></div>'+
+    '<div><span>Жекшемби</span><b>'+esc(s.hoursSun)+'</b></div><div><span>Телефон</span><b>'+esc(s.phone)+'</b></div></div></div></div></section>'+
+    '<footer><span>© '+esc(s.name)+', '+esc(s.city)+'</span><span>'+esc(s.footerNote)+'</span>'+(PM?'':'<a href="#foto" style="color:inherit;opacity:.6">Фото кошуу</a>')+installHTML()+'</footer></main>'+(PM?pbarHTML():'')+
+  '<div class="dock"><a class="btn ghost" href="#katalog">Каталог</a><a class="btn" href="#bailanysh">Заявка калтыруу</a></div>';
+}
+
+function openGallery(c,start){
+  var list=photoList(c),i=start||0;
+  var el=document.createElement('div');el.className='lb';el.setAttribute('role','dialog');el.setAttribute('aria-label',c.brand+' '+c.model);
+  el.innerHTML='<button class="lb-x" type="button" aria-label="Жабуу">&times;</button><button class="lb-prev" type="button" aria-label="Мурунку">&lsaquo;</button><img class="lb-img" alt=""><button class="lb-next" type="button" aria-label="Кийинки">&rsaquo;</button><div class="lb-c"></div>';
+  document.body.appendChild(el);document.body.style.overflow='hidden';
+  var img=el.querySelector('.lb-img'),cnt=el.querySelector('.lb-c'),pv=el.querySelector('.lb-prev'),nx=el.querySelector('.lb-next');
+  function show(){img.src=list[i];img.alt=c.brand+' '+c.model;cnt.textContent=(i+1)+' / '+list.length+' · '+c.brand+' '+c.model;pv.hidden=nx.hidden=list.length<2}
+  function go(d){i=(i+d+list.length)%list.length;show()}
+  function close(){document.removeEventListener('keydown',key);el.remove();document.body.style.overflow=''}
+  function key(e){if(e.key==='Escape')close();else if(e.key==='ArrowLeft')go(-1);else if(e.key==='ArrowRight')go(1)}
+  el.addEventListener('click',function(e){if(e.target.closest('.lb-x')||e.target===el)close();else if(e.target.closest('.lb-prev'))go(-1);else if(e.target.closest('.lb-next'))go(1)});
+  var x0=null;
+  el.addEventListener('touchstart',function(e){x0=e.touches[0].clientX},{passive:true});
+  el.addEventListener('touchend',function(e){if(x0==null)return;var dx=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(dx)>50)go(dx<0?1:-1)});
+  document.addEventListener('keydown',key);show();
+}
+function bindSite(){
+  var cars=S.cars.filter(function(c){return c.status!=='hidden'});
+  var onSale=cars.filter(function(c){return c.status==='sale'});
+  var bodies=[''].concat(cars.map(function(c){return c.body}).filter(function(v,i,a){return a.indexOf(v)===i}));
+  var brands=cars.map(function(c){return c.brand}).filter(function(v,i,a){return a.indexOf(v)===i}).sort();
+  if(bodies.indexOf(ST.body)<0)ST.body='';
+  if(brands.indexOf(ST.brand)<0)ST.brand='';
+  $('fBrand').innerHTML='<option value="">Баары</option>'+brands.map(function(b){return '<option'+(b===ST.brand?' selected':'')+'>'+esc(b)+'</option>'}).join('');
+  if(ST.budget)$('fBudget').value=ST.budget;
+  $('sort').value=ST.sort;
+  $('chips').innerHTML=bodies.map(function(b){return '<button type="button" class="chip" data-b="'+esc(b)+'" aria-pressed="'+(b===ST.body?'true':'false')+'">'+esc(b||'Баары')+'</button>'}).join('');
+  var opts=onSale.map(function(c){return '<option value="'+c.id+'">'+esc(c.brand+' '+c.model+' · '+c.year+' · '+money(c.price))+'</option>'}).join('');
+  $('cCar').innerHTML=opts;
+  $('carSel').innerHTML='<option value="">Азырынча тандабаймын</option>'+opts;
+
+  function renderGrid(){
+    var list=cars.filter(function(c){return (!ST.body||c.body===ST.body)&&(!ST.brand||c.brand===ST.brand)&&(!ST.budget||c.price<=ST.budget)});
+    list.sort(function(a,b){
+      if(ST.sort==='asc')return a.price-b.price;
+      if(ST.sort==='desc')return b.price-a.price;
+      if(ST.sort==='km')return a.km-b.km;
+      return b.year-a.year||a.price-b.price});
+    var g=$('grid');
+    if(!list.length){g.innerHTML='<div class="empty" style="grid-column:1/-1">'+(cars.length?'Бул шарттар боюнча унаа табылган жок. Бюджетти жогорулатып же маркани алмаштырып көрүңүз.':'Каталог жакында жаңыланат. Менеджерге чалып сураңыз.')+'</div>';return}
+    g.innerHTML=list.map(function(c){
+      var sold=c.status==='sold';
+      return '<article class="card"><div class="pic'+(sold?' sold':'')+'"'+(photoList(c).length?' data-gal="'+c.id+'" role="button" tabindex="0" aria-label="Сүрөттөрдү көрүү"':'')+' style="background:'+BG[c.id%4]+'">'+(photoList(c).length>1?'<span class="cnt">'+photoList(c).length+' фото</span>':'')+
+      (sold?'<span class="tag sold">Сатылды</span>':(c.tag?'<span class="tag">'+esc(c.tag)+'</span>':''))+(c.photo?photoImg(c,'ph'):carSvg(c))+'</div>'+
+      '<div class="info">'+(PM?pmRow(c):'')+'<h3>'+esc(c.brand+' '+c.model)+'</h3><div class="specs"><span>'+esc(c.year)+' ж.</span><span>'+Number(c.km).toLocaleString('ru-RU')+' км</span><span>'+esc(c.fuel)+'</span><span>'+esc(c.gear)+'</span></div>'+
+      '<div class="price"><b>'+money(c.price)+'</b>'+(sold?'<button class="btn" type="button" disabled>Сатылды</button>':'<button class="btn" data-id="'+c.id+'" type="button">Кызыктым</button>')+'</div></div></article>'}).join('');
+  }
+  function calc(){
+    var c=onSale.filter(function(x){return String(x.id)===$('cCar').value})[0]||onSale[0];
+    var d=+$('cDown').value,t=+$('cTerm').value;
+    $('cTermV').textContent=t+' ай';
+    if(!c){$('cDownV').textContent='';$('cMonth').textContent='—';$('cNote').textContent='Азыр сатууда унаа жок.';return}
+    var rate=(Number(S.s.rate)||0)/100/12,loan=c.price*(1-d/100);
+    var m=rate>0?loan*rate/(1-Math.pow(1+rate,-t)):loan/t;
+    $('cDownV').textContent=d+'% · '+money(c.price*d/100);
+    $('cMonth').textContent=money(m)+' / ай';
+    $('cNote').textContent='Жылдык ставка '+(Number(S.s.rate)||0)+'% менен болжолдуу эсеп. Так шарттарды менеджер тактайт.';
+  }
+  renderGrid();calc();
+  if(PM){
+    $('grid').addEventListener('change',function(e){var t=e.target;if(t.classList.contains('pmf')&&t.files&&t.files.length)addPhotos(+t.dataset.pid,[].slice.call(t.files))});
+    $('grid').addEventListener('click',function(e){var b=e.target.closest('[data-clr]');if(b)clearPhotos(+b.dataset.clr)});
+    var dl=$('pdl');if(dl)dl.addEventListener('click',download);
+  }
+  $('chips').addEventListener('click',function(e){
+    var b=e.target.closest('.chip');if(!b)return;ST.body=b.dataset.b;
+    [].forEach.call($('chips').children,function(x){x.setAttribute('aria-pressed',x===b?'true':'false')});renderGrid()});
+  $('sort').addEventListener('change',function(e){ST.sort=e.target.value;renderGrid()});
+  $('finder').addEventListener('submit',function(e){
+    e.preventDefault();ST.brand=$('fBrand').value;ST.budget=parseInt($('fBudget').value,10)||0;ST.body='';
+    [].forEach.call($('chips').children,function(x,i){x.setAttribute('aria-pressed',i===0?'true':'false')});
+    renderGrid();$('katalog').scrollIntoView({behavior:'smooth'})});
+  function galOf(e){var el=e.target.closest('.pic[data-gal]');return el?cars.filter(function(x){return String(x.id)===el.dataset.gal})[0]:null}
+  $('grid').addEventListener('click',function(e){var g=galOf(e);if(g)openGallery(g,0)});
+  $('grid').addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){var g=galOf(e);if(g){e.preventDefault();openGallery(g,0)}}});
+  $('grid').addEventListener('click',function(e){
+    var b=e.target.closest('button[data-id]');if(!b)return;
+    $('carSel').value=b.dataset.id;$('cCar').value=b.dataset.id;calc();$('bailanysh').scrollIntoView({behavior:'smooth'})});
+  ['cCar','cDown','cTerm'].forEach(function(i){$(i).addEventListener('input',calc)});
+  $('contact').addEventListener('submit',function(e){
+    e.preventDefault();
+    var c=cars.filter(function(x){return String(x.id)===$('carSel').value})[0];
+    var txt='Саламатсызбы! Мен '+$('name').value+'. Телефон: '+$('tel').value+'.'+(c?' Кызыккан унаа: '+c.brand+' '+c.model+' ('+c.year+', '+money(c.price)+').':'')+' Тест-драйвга жазылгым келет.'+($('msg').value?' '+$('msg').value:'');
+    $('notePre').textContent=txt;
+    var wa=String(S.s.wa||'').replace(/\D/g,''),a=$('noteWa');
+    if(wa){a.href='https://wa.me/'+wa+'?text='+encodeURIComponent(txt);a.hidden=false}else{a.hidden=true}
+    $('note').hidden=false;$('note').scrollIntoView({behavior:'smooth',block:'nearest'})});
+  $('copy').addEventListener('click',function(){
+    var t=$('notePre').textContent,b=$('copy');
+    var done=function(){b.textContent='Көчүрүлдү'};
+    var fb=function(){var r=document.createRange();r.selectNodeContents($('notePre'));var s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Текст белгиленди, көчүрүңүз'};
+    try{navigator.clipboard.writeText(t).then(done,fb)}catch(err){fb()}});
+}
+
+
+var FONT='https://fonts.googleapis.com/css2?family=Onest:wght@400;500;600&family=Unbounded:wght@500;700&display=swap';
+var PM=false;
+var PWAHEAD='<meta name="theme-color" content="#17382c">\n<link rel="manifest" href="manifest.webmanifest">\n<link rel="icon" href="icon-192.png">\n<link rel="apple-touch-icon" href="apple-touch-icon.png">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Кут Авто">\n<meta name="apple-mobile-web-app-status-bar-style" content="default">\n';
+var deferredInstall=null;
+function isStandalone(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||window.navigator.standalone===true}
+function isIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
+function installHTML(){
+  if(PM||isStandalone())return '';
+  if(deferredInstall)return '<button class="btn ghost" type="button" id="installBtn" style="padding:8px 12px;font-size:.85rem">Колдонмо катары орнотуу</button>';
+  if(isIOS())return '<span style="flex:1 1 100%">iPhone: Safari\'де "Бөлүшүү" баскычын басып, "Башкы экранга кошуу" тандаңыз.</span>';
+  return '';
+}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();deferredInstall=e;if(!PM&&$('root')&&$('root').innerHTML)repaintKeep()});
+window.addEventListener('appinstalled',function(){deferredInstall=null;if(!PM)repaintKeep()});
+document.addEventListener('click',function(e){
+  if(e.target&&e.target.id==='installBtn'&&deferredInstall){deferredInstall.prompt();deferredInstall.userChoice.then(function(){deferredInstall=null;repaintKeep()})}
+});
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})})}
+function pmRow(c){
+  var n=photoList(c).length;
+  return '<div class="pm"><label class="btn ghost">+ Сүрөт ('+n+')<input class="pmf vh" type="file" accept="image/*" multiple data-pid="'+c.id+'"></label>'+
+    (n?'<button class="btn ghost" type="button" data-clr="'+c.id+'">Сүрөттөрдү өчүрүү</button>':'')+'<span class="pmm" id="pmm'+c.id+'"></span></div>';
+}
+function pbarHTML(){return '<div class="pbar"><span id="pst">Фото режими. Сүрөттөр бул телефондо сакталат.</span><button class="btn" type="button" id="pdl">Файлды жүктөп алуу</button><a class="btn ghost" href="#top">Чыгуу</a></div>'}
+function pst(t){var e=$('pst');if(e)e.textContent=t}
+function idb(){return new Promise(function(res,rej){var r=indexedDB.open('kut-avto',1);r.onupgradeneeded=function(){r.result.createObjectStore('kv')};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})}
+function kvGet(k){return idb().then(function(db){return new Promise(function(res,rej){var q=db.transaction('kv').objectStore('kv').get(k);q.onsuccess=function(){res(q.result)};q.onerror=function(){rej(q.error)}})})}
+function kvSet(k,v){return idb().then(function(db){return new Promise(function(res,rej){var t=db.transaction('kv','readwrite');t.objectStore('kv').put(v,k);t.oncomplete=res;t.onerror=function(){rej(t.error)}})})}
+async function saveDraft(){
+  S.rev=Date.now();
+  try{await kvSet('draft:'+S.siteId,JSON.parse(JSON.stringify(S)));pst('Сакталды. Кардарларга көрүнүшү үчүн "Файлды жүктөп алуу" басып, хостингге жүктөңүз.');return true}
+  catch(e){pst('Бул браузерде автосактоо иштебейт. Дароо "Файлды жүктөп алуу" басыңыз.');return false}
+}
+async function shrink(file){
+  var src;
+  try{src=await createImageBitmap(file)}catch(e){
+    src=await new Promise(function(res,rej){var u=URL.createObjectURL(file),im=new Image();im.onload=function(){res(im)};im.onerror=function(){rej(new Error('decode'))};im.src=u});
+  }
+  var w=src.width||src.naturalWidth,h=src.height||src.naturalHeight,r=Math.min(1,1000/Math.max(w,h));
+  var cv=document.createElement('canvas');cv.width=Math.max(1,Math.round(w*r));cv.height=Math.max(1,Math.round(h*r));
+  cv.getContext('2d').drawImage(src,0,0,cv.width,cv.height);
+  return new Promise(function(res,rej){cv.toBlob(function(b){b?res(b):rej(new Error('blob'))},'image/jpeg',0.8)});
+}
+function upload(blob){return new Promise(function(res,rej){var fr=new FileReader();fr.onload=function(){res(fr.result)};fr.onerror=function(){rej(fr.error)};fr.readAsDataURL(blob)})}
+function repaintKeep(){var y=window.scrollY;root.innerHTML=siteHTML();bindSite();window.scrollTo(0,y)}
+async function addPhotos(id,files){
+  var c=S.cars.filter(function(x){return x.id===id})[0];if(!c)return;
+  var ph=photoList(c).slice(),fails=0,m=$('pmm'+id);
+  for(var k=0;k<files.length&&ph.length<10;k++){
+    if(m)m.textContent='Жүктөп жатам '+(k+1)+' / '+files.length+'...';
+    try{ph.push(await upload(await shrink(files[k])))}catch(e){fails++}
+  }
+  c.photos=ph;c.photo=ph[0]||'';
+  await saveDraft();repaintKeep();
+  var m2=$('pmm'+id);if(m2){m2.textContent=fails?'Кээ бир сүрөт ('+fails+') жүктөлгөн жок. Башка сүрөт тандап көрүңүз (JPG же PNG).':'Жүктөлдү: '+ph.length+' сүрөт.';m2.style.color=fails?'var(--bad)':'var(--good)'}
+}
+async function clearPhotos(id){
+  var c=S.cars.filter(function(x){return x.id===id})[0];if(!c)return;
+  c.photos=[];c.photo='';await saveDraft();repaintKeep();
+}
+function buildDoc(){
+  S.rev=Date.now();
+  var data=JSON.stringify(S).replace(/</g,'\\u003c').split(String.fromCharCode(8232)).join('\\u2028').split(String.fromCharCode(8233)).join('\\u2029');
+  return '<!doctype html>\n<html lang="ky">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">\n<title>'+esc(S.s.name)+'</title>\n'+PWAHEAD+'<link rel="stylesheet" href="'+FONT+'">\n'+
+    '<style id="app-css">'+$('app-css').textContent+'</style>\n</head>\n<body>\n<div id="root"></div>\n'+
+    '<script type="application/json" id="site-data">'+data+'<\/script>\n<script id="app-js">'+$('app-js').textContent+'<\/script>\n</body>\n</html>\n';
+}
+function download(){
+  var doc=buildDoc();saveDraft();
+  var a=document.createElement('a');a.href=URL.createObjectURL(new Blob([doc],{type:'text/html'}));a.download='index.html';
+  document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove()},2000);
+  pst('Файл жүктөлдү (index.html). Аны хостингге жүктөңүз.');
+}
+function paint(){root.innerHTML=siteHTML();bindSite();window.scrollTo(0,0)}
+function route(){var p=location.hash==='#foto';if(p!==PM){PM=p;paint()}}
+window.addEventListener('hashchange',route);
+PM=location.hash==='#foto';
+(function(){
+  var done=false;function go(){if(done)return;done=true;applyAccent();document.title=S.s.name;paint()}
+  setTimeout(go,1500);
+  kvGet('draft:'+S.siteId).then(function(d){if(d&&d.rev>(S.rev||0)&&d.s&&d.cars)S=d}).catch(function(){}).then(go);
+})();
+
+})();
+</script>
+</body>
+</html>
